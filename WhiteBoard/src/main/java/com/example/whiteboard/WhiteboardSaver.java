@@ -1,73 +1,76 @@
-package com.example.whiteboard;
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
 
-import javafx.scene.canvas.Canvas;
-import javafx.scene.image.WritableImage;
-import javafx.scene.image.PixelReader;
-import javafx.stage.FileChooser;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+<VBox spacing="20" alignment="CENTER" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.whiteboard.WhiteboardController"
+      style="-fx-background-color: #f4f4f4; -fx-padding: 20;">
 
-public class WhiteboardSaver {
+    <!-- Whiteboard drawing area -->
+    <Pane fx:id="whiteboardPane" prefWidth="800" prefHeight="500"
+          style="-fx-border-color: #ccc; -fx-border-width: 2; -fx-background-color: white;">
+        <Canvas fx:id="drawingCanvas" width="800" height="500"/>
+    </Pane>
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
 
-    public static void saveWhiteboardAsImage(Canvas canvas) {
-        // Initialize FileChooser for saving the image
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG Files", "*.png"));
-        fileChooser.setTitle("Save Whiteboard");
+<VBox spacing="20" alignment="CENTER" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.whiteboard.WhiteboardController"
+      style="-fx-background-color: #f4f4f4; -fx-padding: 20;">
 
-        // Open the file chooser dialog and get the selected file
-        File file = fileChooser.showSaveDialog(canvas.getScene().getWindow());
+    <!-- Whiteboard drawing area -->
+    <Pane fx:id="whiteboardPane" prefWidth="800" prefHeight="500"
+          style="-fx-border-color: #ccc; -fx-border-width: 2; -fx-background-color: white;">
+        <Canvas fx:id="drawingCanvas" width="800" height="500"/>
+    </Pane>
 
-        if (file != null) {
-            try {
-                // Ensure file has .png extension
-                if (!file.getName().endsWith(".png")) {
-                    file = new File(file.getAbsolutePath() + ".png");
-                }
+    <!-- Horizontal control panel using HBox -->
+    <HBox spacing="10" alignment="CENTER"
+          style="-fx-padding: 10; -fx-background-color: #e0e0e0; -fx-border-radius: 5; -fx-background-radius: 5;">
 
-                // Create a snapshot of the canvas
-                WritableImage snapshot = new WritableImage((int) canvas.getWidth(), (int) canvas.getHeight());
-                canvas.snapshot(null, snapshot);
+        <ColorPicker fx:id="colorPicker" />
 
-                // Convert WritableImage to BufferedImage
-                BufferedImage bufferedImage = convertToBufferedImage(snapshot);
+        <Button text="🧽 Eraser" onAction="#useEraser"
+                style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-background-radius: 5;" />
+        <Button text="🔊 Sound"
+                style="-fx-background-color: #17a2b8; -fx-text-fill: white; -fx-background-radius: 5;" />
 
-                // Save the BufferedImage as a PNG file
-                ImageIO.write(bufferedImage, "PNG", file);
-                System.out.println("Whiteboard saved successfully: " + file.getAbsolutePath());
-            } catch (IOException e) {
-                System.err.println("Error saving whiteboard image: " + e.getMessage());
-            }
-        }
-    }
+        <Button text="Add Image" onAction="#addImage"
+                style="-fx-background-color: #0078d7; -fx-text-fill: white; -fx-background-radius: 5;"/>
+        <Button text="Save" onAction="#saveSession"
+                style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-background-radius: 5;"/>
+        <Button text="Clear" onAction="#clearCanvas"
+                style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-background-radius: 5;"/>
+    </HBox>
+</VBox>
 
-    private static BufferedImage convertToBufferedImage(WritableImage writableImage) {
-        PixelReader pixelReader = writableImage.getPixelReader();
-        int width = (int) writableImage.getWidth();
-        int height = (int) writableImage.getHeight();
-        BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    <!-- Horizontal control panel using HBox -->
+    <HBox spacing="10" alignment="CENTER"
+          style="-fx-padding: 10; -fx-background-color: #e0e0e0; -fx-border-radius: 5; -fx-background-radius: 5;">
 
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                // Get the color at the current pixel
-                javafx.scene.paint.Color color = pixelReader.getColor(x, y);
+        <ColorPicker fx:id="colorPicker" />
 
-                // Convert the color components to the 0-255 range
-                int red = (int) (color.getRed() * 255);
-                int green = (int) (color.getGreen() * 255);
-                int blue = (int) (color.getBlue() * 255);
-                int alpha = (int) (color.getOpacity() * 255);
+        <Button text="🧽 Eraser" onAction="#useEraser"
+                style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-background-radius: 5;" />
+        <Button text="🔊 Sound"
+                style="-fx-background-color: #17a2b8; -fx-text-fill: white; -fx-background-radius: 5;" />
 
-                // Combine the RGBA components into a single ARGB value
-                int argb = (alpha << 24) | (red << 16) | (green << 8) | blue;
-
-                // Set the RGB value in the BufferedImage
-                bufferedImage.setRGB(x, y, argb);
-            }
-        }
-
-        return bufferedImage;
-    }
-}
+        <Button text="Add Image" onAction="#addImage"
+                style="-fx-background-color: #0078d7; -fx-text-fill: white; -fx-background-radius: 5;"/>
+        <Button text="Save" onAction="#saveSession"
+                style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-background-radius: 5;"/>
+        <Button text="Clear" onAction="#clearCanvas"
+                style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-background-radius: 5;"/>
+    </HBox>
+</VBox>
